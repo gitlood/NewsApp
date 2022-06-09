@@ -137,9 +137,27 @@ public class Util {
             JSONObject json = new JSONObject(response);
             JSONArray jsonArray = json.getJSONObject("response").getJSONArray("results");
             for (int i = 0; i < jsonArray.length(); i++) {
-                System.out.println(jsonArray.get(i).toString());
-                //Articles.add(new Article(jsonArray.getJSONObject(i).getJSONObject("webTitle"),
+                JSONObject newsObj = jsonArray.getJSONObject(i);
+                if (newsObj != null) {
+                    String title = newsObj.optString("webTitle");
+                    String section = newsObj.optString("sectionName");
+                    String publishDate = newsObj.optString("webPublicationDate");
+                    String webUrl = newsObj.optString("webUrl");
+
+                    String thumbnailUrl = "";
+                    JSONObject fields = newsObj.optJSONObject("fields");
+                    if (fields != null) {
+                        thumbnailUrl = fields.optString("thumbnail");
+                    }
+
+                    Articles.add(new Article(
+                            title,
+                            webUrl,
+                            publishDate,
+                            section,
+                            thumbnailUrl));
                 }
+            }
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
