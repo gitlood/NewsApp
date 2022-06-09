@@ -143,6 +143,7 @@ public class Util {
                     String section = newsObj.optString("sectionName");
                     String publishDate = newsObj.optString("webPublicationDate");
                     String webUrl = newsObj.optString("webUrl");
+                    String author = newsObj.optJSONArray("tags").optJSONObject(0).optString("webTitle");
 
                     String thumbnailUrl = "";
                     JSONObject fields = newsObj.optJSONObject("fields");
@@ -155,7 +156,8 @@ public class Util {
                             webUrl,
                             publishDate,
                             section,
-                            thumbnailUrl));
+                            thumbnailUrl,
+                            author));
                 }
             }
         } catch (JSONException e) {

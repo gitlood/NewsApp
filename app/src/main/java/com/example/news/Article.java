@@ -6,13 +6,23 @@ public class Article {
     private String date;
     private String sectionName;
     private String thumbnail;
+    private String author;
 
-    public Article(String title, String webUrl, String date, String sectionName, String thumbnail) {
+    public Article(String title, String webUrl, String date, String sectionName, String thumbnail, String author) {
         this.title = title;
         this.webUrl = webUrl;
         this.date = date;
         this.sectionName = sectionName;
         this.thumbnail = thumbnail;
+        this.author = author;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getTitle() {
