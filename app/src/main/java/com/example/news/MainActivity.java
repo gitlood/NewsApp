@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -25,11 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
-    private final String API_KEY = "&api-key=357729b5-a772-4033-b233-d312ce47992e";
+    private static final String GUARDIAN_REQ_URL = "http://content.guardianapis.com/search";
+    private final String API_KEY = "357729b5-a772-4033-b233-d312ce47992e";
+    private static final String QUERY_API_KEY = "api-key";
+    private static final String QUERY_THUMBNAIL = "show-fields";
+    private static final String QUERY_AUTHOR = "show-tags";
+    private static final String THUMBNAIL_VALUE = "thumbnail";
+    private static final String AUTHOR_VALUE = "contributor";
+    private static final String QUERY_PAGE = "page-size";
 
-    private final String URL_SECTION = "https://content.guardianapis.com/sections?";
-
-    private final String URL_SEARCH = "https://content.guardianapis.com/search?q=";
+    /**
+     * Constants string variables storing API call back responses
+     */
 
     public static final String LOG_TAG = MainActivity.class.getName();
 
@@ -60,9 +68,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         loaderManager = getLoaderManager();
     }
 
+
     @Override
     public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
-        return new ArticleLoader(this, Url);
+        //Parsing the base URL for Guardian API
+        Uri.Builder builder = Uri.parse(GUARDIAN_REQ_URL).buildUpon();
+
+        //Setting up the query parameters - api key, topic for the news, author name and news thumbnail
+        int initialPage = 50;
+        builder
+                .appendQueryParameter(QUERY_API_KEY, API_KEY)
+                .appendQueryParameter(QUERY_PAGE, String.valueOf(initialPage))
+                .appendQueryParameter(QUERY_AUTHOR, AUTHOR_VALUE)
+                .appendQueryParameter(QUERY_THUMBNAIL, THUMBNAIL_VALUE);
+        return new ArticleLoader(this, builder.toString());
     }
 
     @Override
@@ -155,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     Log.d(TAG, "onQueryTextSubmit: internet is available");
                     emptyView.setVisibility(View.INVISIBLE);
                     progressbar.setVisibility(View.VISIBLE);
-                    Url = URL_SEARCH + query + API_KEY;
+               //  Url = mUrl;
                     Log.d(TAG, "onQueryTextSubmit: " + Url);
 
                     articleAdapters.clear();
