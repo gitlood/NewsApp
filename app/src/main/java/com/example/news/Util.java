@@ -23,7 +23,7 @@ public class Util {
      * Query the Google API dataset and return an {@link Article} object to represent a single Article.
      */
     public static ArrayList<Article> fetchArticleData(String requestUrl) {
-          // Create URL object
+        // Create URL object
         URL url = createUrl(requestUrl);
 
         // Perform HTTP request to the URL and receive a JSON response back
@@ -82,7 +82,7 @@ public class Util {
                 Log.e(LOG_TAG, "Error response code: " + urlConnection.getResponseCode());
             }
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Problem retrieving the earthquake JSON results.", e);
+            Log.e(LOG_TAG, "Problem retrieving the News article JSON results.", e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -148,7 +148,8 @@ public class Util {
                     String author = "";
 
                     JSONArray tags = newsObj.optJSONArray("tags");
-                    if(tags.length() != 0){
+                    assert tags != null;
+                    if (tags.length() != 0) {
                         author = tags.optJSONObject(0).optString("webTitle");
                     }
 
@@ -177,5 +178,4 @@ public class Util {
         // Return the list of Articles
         return Articles;
     }
-
 }

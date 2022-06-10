@@ -77,39 +77,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .appendQueryParameter(QUERY_PAGE, String.valueOf(initialPage))
                 .appendQueryParameter(QUERY_AUTHOR, AUTHOR_VALUE)
                 .appendQueryParameter(QUERY_THUMBNAIL, THUMBNAIL_VALUE);
-        // Get a reference to the ConnectivityManager to check state of network connectivity
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        // Get details on the currently active default data network
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
         // If there is a network connection, fetch data
-        if (networkInfo != null && networkInfo.isConnected()) {
+        if (checkOnlineStatus()) {
             Log.d(TAG, "onQueryTextSubmit: internet is available");
             emptyView.setVisibility(View.INVISIBLE);
             progressbar.setVisibility(View.VISIBLE);
             Url = builder.toString();
             Log.d(TAG, "onQueryTextSubmit: " + Url);
-
             articleAdapters.clear();
-
             loaderManager.initLoader(1, null, MainActivity.this);
-
-            Url = "";
         } else {
             emptyView.setText(R.string.no_internet_connection);
             articleAdapters.clear();
+            progressbar.setVisibility(View.INVISIBLE);
             emptyView.setVisibility(View.VISIBLE);
-        }}
-
+        }
+    }
 
     @Override
     public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
         return new ArticleLoader(this, Url);
     }
 
-    public String searchQueryURL(String searchQuery){
+    public String searchQueryURL(String searchQuery) {
         //Parsing the base URL for Guardian API
         Uri.Builder builder = Uri.parse(GUARDIAN_REQ_URL).buildUpon();
 
@@ -201,15 +192,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public boolean onQueryTextSubmit(String query) {
 
                 Log.d(TAG, "onQueryTextSubmit: called");
-                // Get a reference to the ConnectivityManager to check state of network connectivity
-                ConnectivityManager connMgr = (ConnectivityManager)
-                        getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                // Get details on the currently active default data network
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
                 // If there is a network connection, fetch data
-                if (networkInfo != null && networkInfo.isConnected()) {
+                if (checkOnlineStatus()) {
                     Log.d(TAG, "onQueryTextSubmit: internet is available");
                     emptyView.setVisibility(View.INVISIBLE);
                     progressbar.setVisibility(View.VISIBLE);
@@ -232,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 } else {
                     emptyView.setText(R.string.no_internet_connection);
                     articleAdapters.clear();
+                    progressbar.setVisibility(View.INVISIBLE);
                     emptyView.setVisibility(View.VISIBLE);
                 }
                 return true;
@@ -243,5 +229,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
         return true;
+    }
+
+    public boolean checkOnlineStatus() {
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Get details on the currently active default data network
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

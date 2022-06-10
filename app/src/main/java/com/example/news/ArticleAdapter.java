@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,7 +15,11 @@ import androidx.cardview.widget.CardView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ArticleAdapter extends ArrayAdapter<Article> {
     public ArticleAdapter(@NonNull Context context, List<Article> articles) {
@@ -24,8 +27,8 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
     }
 
     /**
-     * Returns a list item view that displays information about the earthquake at the given position
-     * in the list of earthquakes.
+     * Returns a list item view that displays information about the article at the given position
+     * in the list of articles.
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -37,7 +40,7 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
                     R.layout.article_list_view, parent, false);
         }
 
-        // Find the earthquake at the given position in the list of earthquakes
+        // Find the article at the given position in the list of articles
         Article currentArticle = getItem(position);
 
         // View variable declaration for UI elements
@@ -56,23 +59,42 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         newsTimeStamp = itemView.findViewById(R.id.timestamp_text);
         newsSection = itemView.findViewById(R.id.section_text);
 
+        //using picasso to load thumbnails into imageview
         Picasso.get().load(currentArticle.getThumbnail()).into(imageView);
         newsTitle.setText(currentArticle.getTitle());
 
+        //putting api strings into UI elements
         newsAuthor.setText(currentArticle.getAuthor());
-        newsTimeStamp.setText(currentArticle.getDate());
+        newsTimeStamp.setText(formatDate(currentArticle.getDate()));
         newsSection.setText(currentArticle.getSectionName());
 
+        //listener detects clicks on cardview and goes to webpage for article
         CardView card = itemView.findViewById(R.id.card);
-        card.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-                browserIntent.setData(Uri.parse(currentArticle.getWebUrl()));
-                getContext().startActivity(browserIntent);
-            }
+        card.setOnClickListener(view -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+            browserIntent.setData(Uri.parse(currentArticle.getWebUrl()));
+            getContext().startActivity(browserIntent);
         });
 
         return itemView;
+    }
+
+    /**
+     * This method format the date into a specific pattern.
+     * @param dateObj is the web publication date.
+     * @return a date formatted's string.
+     */
+    private String formatDate(String dateObj) {
+        String dateFormatted = "";
+        SimpleDateFormat inputDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+        SimpleDateFormat outputDate = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+        try {
+            Date newDate = inputDate.parse(dateObj);
+            assert newDate != null;
+            return outputDate.format(newDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateFormatted;
     }
 }

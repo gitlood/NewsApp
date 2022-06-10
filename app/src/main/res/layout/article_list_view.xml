@@ -1,6 +1,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin4dp"
@@ -9,8 +10,7 @@
     app:cardElevation="0dp"
     app:cardMaxElevation="0dp"
     app:cardPreventCornerOverlap="true"
-    app:cardUseCompatPadding="true"
-    android:id="@+id/card">
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,7 +65,6 @@
                 android:textAllCaps="true"
                 android:textColor="@color/color_white"
                 tools:text="News Section" />
-
         </LinearLayout>
 
         <ImageView

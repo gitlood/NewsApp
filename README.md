@@ -19,11 +19,11 @@ I learned about connecting to the internet in Android, parsing responses from an
 <table>
 <tr>
 <td>
-Book search: android<br>
+Home Page<br>
 <img src =app/src/main/res/readmescreenshots/1.jpg>
 </td>
 <td>
-Book search: hunt<br>
+News search: UFC<br>
 <img src=app/src/main/res/readmescreenshots/2.jpg>
 </td>
 </tr>
