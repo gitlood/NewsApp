@@ -28,6 +28,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Article>> {
     private static final String GUARDIAN_REQ_URL = "http://content.guardianapis.com/search";
     private final String API_KEY = "357729b5-a772-4033-b233-d312ce47992e";
+    private static final String QUERY_SEARCH = "q";
     private static final String QUERY_API_KEY = "api-key";
     private static final String QUERY_THUMBNAIL = "show-fields";
     private static final String QUERY_AUTHOR = "show-tags";
@@ -66,11 +67,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Get a reference to the LoaderManager, in order to interact with loaders.
         loaderManager = getLoaderManager();
-    }
-
-
-    @Override
-    public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
         //Parsing the base URL for Guardian API
         Uri.Builder builder = Uri.parse(GUARDIAN_REQ_URL).buildUpon();
 
@@ -81,7 +77,50 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 .appendQueryParameter(QUERY_PAGE, String.valueOf(initialPage))
                 .appendQueryParameter(QUERY_AUTHOR, AUTHOR_VALUE)
                 .appendQueryParameter(QUERY_THUMBNAIL, THUMBNAIL_VALUE);
-        return new ArticleLoader(this, builder.toString());
+        // Get a reference to the ConnectivityManager to check state of network connectivity
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Get details on the currently active default data network
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        // If there is a network connection, fetch data
+        if (networkInfo != null && networkInfo.isConnected()) {
+            Log.d(TAG, "onQueryTextSubmit: internet is available");
+            emptyView.setVisibility(View.INVISIBLE);
+            progressbar.setVisibility(View.VISIBLE);
+            Url = builder.toString();
+            Log.d(TAG, "onQueryTextSubmit: " + Url);
+
+            articleAdapters.clear();
+
+            loaderManager.initLoader(1, null, MainActivity.this);
+
+            Url = "";
+        } else {
+            emptyView.setText(R.string.no_internet_connection);
+            articleAdapters.clear();
+            emptyView.setVisibility(View.VISIBLE);
+        }}
+
+
+    @Override
+    public Loader<List<Article>> onCreateLoader(int i, Bundle bundle) {
+        return new ArticleLoader(this, Url);
+    }
+
+    public String searchQueryURL(String searchQuery){
+        //Parsing the base URL for Guardian API
+        Uri.Builder builder = Uri.parse(GUARDIAN_REQ_URL).buildUpon();
+
+        //Setting up the query parameters - api key, topic for the news, author name and news thumbnail
+        int initialPage = 50;
+        builder.appendQueryParameter(QUERY_SEARCH, searchQuery)
+                .appendQueryParameter(QUERY_API_KEY, API_KEY)
+                .appendQueryParameter(QUERY_PAGE, String.valueOf(initialPage))
+                .appendQueryParameter(QUERY_AUTHOR, AUTHOR_VALUE)
+                .appendQueryParameter(QUERY_THUMBNAIL, THUMBNAIL_VALUE);
+        return builder.toString();
     }
 
     @Override
@@ -174,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     Log.d(TAG, "onQueryTextSubmit: internet is available");
                     emptyView.setVisibility(View.INVISIBLE);
                     progressbar.setVisibility(View.VISIBLE);
-               //  Url = mUrl;
+                    Url = searchQueryURL(query);
                     Log.d(TAG, "onQueryTextSubmit: " + Url);
 
                     articleAdapters.clear();

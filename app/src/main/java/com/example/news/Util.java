@@ -139,11 +139,18 @@ public class Util {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject newsObj = jsonArray.getJSONObject(i);
                 if (newsObj != null) {
+                    System.out.println(newsObj);
                     String title = newsObj.optString("webTitle");
                     String section = newsObj.optString("sectionName");
                     String publishDate = newsObj.optString("webPublicationDate");
                     String webUrl = newsObj.optString("webUrl");
-                    String author = newsObj.optJSONArray("tags").optJSONObject(0).optString("webTitle");
+
+                    String author = "";
+
+                    JSONArray tags = newsObj.optJSONArray("tags");
+                    if(tags.length() != 0){
+                        author = tags.optJSONObject(0).optString("webTitle");
+                    }
 
                     String thumbnailUrl = "";
                     JSONObject fields = newsObj.optJSONObject("fields");
