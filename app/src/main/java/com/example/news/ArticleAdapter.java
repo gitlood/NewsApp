@@ -1,6 +1,8 @@
 package com.example.news;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 
 import com.squareup.picasso.Picasso;
 
@@ -59,6 +62,16 @@ public class ArticleAdapter extends ArrayAdapter<Article> {
         newsAuthor.setText(currentArticle.getAuthor());
         newsTimeStamp.setText(currentArticle.getDate());
         newsSection.setText(currentArticle.getSectionName());
+
+        CardView card = itemView.findViewById(R.id.card);
+        card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+                browserIntent.setData(Uri.parse(currentArticle.getWebUrl()));
+                getContext().startActivity(browserIntent);
+            }
+        });
 
         return itemView;
     }
